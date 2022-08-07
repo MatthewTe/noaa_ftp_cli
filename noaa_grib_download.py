@@ -2,6 +2,7 @@
 import ftplib
 import os
 import pandas as pd
+import argparse
 
 # Breaking out the main function into small sub functions:
 def build_path_main_dir(date: str, hour: str):
@@ -75,7 +76,7 @@ def download_grib_data(ftp_con, date:str, hour:str, file_index:str):
 
 
 ## Main Method ##:
-def get_grib_data(start_date, end_date, date=None):
+def get_grib_data(start_date=None, end_date=None, date=None):
     # Hard coding the hour and index values:
     hour_ranges = ["00", "06", "12", "18"]
     f_num = ["000", "001", "002", "003", "004", "005", "006", "007"]
@@ -99,5 +100,24 @@ def get_grib_data(start_date, end_date, date=None):
                 download_grib_data(ftp_con=ftp, date=date, hour=hour, file_index=num)
 
 
+# Parsing Input from the command line:
+# All optional values - this is sketch:
+parser = argparse.ArgumentParser(description="Downloads NOAA Grib2 data based on hard coded values")
+parser.add_argument("--start_date", metavar="start_date", type=str, help="The Start Date of Grib2 files to be downloaded")
+parser.add_argument("--end_date", metavar="end_date", type=str, help="The End Date of Grib2 files to be downloaded")
+parser.add_argument("--date", metavar="date", type=str, help="The single date value for Grib2 files to be downloaded")
 
-get_grib_data(start_date="20220728", end_date="20220730")
+args = parser.parse_args()
+
+if args.date:
+    get_grib_data(date=args.date)
+
+else:
+    if args.start_date and args.end_date:
+        get_grib_data(start_date=args.start_date, end_date=args.end_date)
+
+
+
+
+
+
