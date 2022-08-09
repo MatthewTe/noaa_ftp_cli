@@ -3,6 +3,7 @@ import ftplib
 import os
 import pandas as pd
 import argparse
+import datetime
 
 # Breaking out the main function into small sub functions:
 def build_path_main_dir(date: str, hour: str):
@@ -106,15 +107,27 @@ parser = argparse.ArgumentParser(description="Downloads NOAA Grib2 data based on
 parser.add_argument("--start_date", metavar="start_date", type=str, help="The Start Date of Grib2 files to be downloaded")
 parser.add_argument("--end_date", metavar="end_date", type=str, help="The End Date of Grib2 files to be downloaded")
 parser.add_argument("--date", metavar="date", type=str, help="The single date value for Grib2 files to be downloaded")
+parser.add_argument("-y", action="store_true", help="The flag that you include of you want the script to download data for the previous day")
 
 args = parser.parse_args()
 
-if args.date:
-    get_grib_data(date=args.date)
 
-else:
-    if args.start_date and args.end_date:
-        get_grib_data(start_date=args.start_date, end_date=args.end_date)
+# If the -y conditional is provided, automatically download the NOAA data from the previous day:
+if args.y:
+    
+    # Extracting the date from yesterday:
+    yesterday = (datetime.datetime.now() - datetime.timedelta(1)).strftime("%Y%m%d")
+
+    # Downloaded NOAA data for the previous day:
+    get_grib_data(date=yesterday)
+
+else: 
+    if args.date:
+        get_grib_data(date=args.date)
+
+    else:
+        if args.start_date and args.end_date:
+            get_grib_data(start_date=args.start_date, end_date=args.end_date)
 
 
 
